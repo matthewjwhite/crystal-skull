@@ -5,6 +5,8 @@ from gevent import Greenlet
 from gevent import monkey
 monkey.patch_all()
 
+from game import GameSession
+
 class TelnetServer():
 
     def __init__(self, host='', port=5555):
@@ -37,15 +39,17 @@ class TelnetServer():
 class TelnetServerHandler(Greenlet):
     def __init__(self, handler_socket):
         self._handler = handler_socket
+        self._game = GameSession()
         super().__init__(self.handle)
         self.start()
 
     def handle(self):
         with self._handler: # Close connection after sending data.
-            times_received = 0
+            # If no 'recv', thread will finish.
+            self._handler.sendall(b'Welcome!')
+            data = self._handler.recv(1024).decode('utf-8').strip()
             while True:
-                self._handler.sendall('{} responses received'.format(times_received)
-                                      .encode('utf-8'))
-                # If no 'recv' call, thread will finish.
-                self._handler.recv(1024) # Blocks thread, waiting for data.
-                times_received += 1
+                result = self._game.apply(data)
+                print(result)
+                self._handler.sendall(result.encode('utf-8'))
+                data = self._handler.recv(1024).decode('utf-8').strip()

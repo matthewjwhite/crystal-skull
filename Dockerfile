@@ -7,4 +7,4 @@ RUN yum install -y python36 && \
 ENV PYTHONUNBUFFERED=1
 EXPOSE 5555
 
-COPY app.py telnet.py /
+COPY app.py telnet.py game.py /
