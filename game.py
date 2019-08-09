@@ -18,5 +18,6 @@ class GameSocket():
         self._socket.sendall(data.encode('utf-8'))
 
     def send_wait(self, data):
-        self.send(data)
+        # Add trailing space to further indicate requested output.
+        self.send('{} '.format(data))
         return self.get()
