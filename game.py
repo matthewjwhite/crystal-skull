@@ -1,11 +1,34 @@
+import pymongo
+import yaml
+import config
+
+CONFIG = config.Config()
+
 class GameSession():
 
     def __init__(self, socket):
         self.socket = GameSocket(socket)
+        self.db = pymongo.MongoClient('mongo', 27017).game
+        self.user = None
+
+    def _initialize(self):
+        name = self.socket.send_wait('Welcome! User?')
+        if not self.db.user.find({'name': name}).count():
+            msg = 'Does not exist! Create (Y/N)?'
+            resp = self.socket.send_wait(msg)
+            if resp.upper() == 'Y':
+                classes = CONFIG.get('player/class')
+                msg = 'Available classes: {}'.format(classes)
+                cls = self.socket.send_wait(msg)
+                if cls not in classes:
+                    self.socket.send('Invalid class!')
+                    raise RuntimeError('Invalid class selected')
+
+                self.user = {'name': name, 'class': cls}
+                self.db.user.insert_one(self.user)
 
     def run(self):
-        response = self.socket.send_wait('Welcome! User?')
-        self.socket.send('Hello, {}!'.format(response))
+        self._initialize()
 
 class GameSocket():
     def __init__(self, socket):

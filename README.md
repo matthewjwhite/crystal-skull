@@ -6,6 +6,8 @@
 
 ## Run
 
-1. `docker run -p 5555:5555 crystal-skull`
+1. `docker-compose up -d`
 1. `telnet localhost 5555`
-1. Type anything, press `Enter`, repeat.
+1. Follow steps to create a user.
+
+The connection will die after the user is created.

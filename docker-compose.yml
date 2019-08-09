@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  crystal:
+    image: crystal-skull
+    ports:
+      - 5555:5555
+  mongo:
+    image: mongo
+    volumes:
+      - "${PWD}/mongo:/data/db"

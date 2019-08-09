@@ -1,3 +1,5 @@
-yay:
-  - hello
-  - there
+player:
+  class:
+    - Mage
+    - Barbarian
+    - Paladin
