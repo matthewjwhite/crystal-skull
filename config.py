@@ -6,7 +6,7 @@ class ConfigError(Exception):
 class Config():
     def __init__(self, loc='config.yml'):
         with open(loc, 'r') as fil:
-            self._config = yaml.load(fil)
+            self._config = yaml.load(fil, Loader=yaml.SafeLoader)
 
     def get(self, path):
         data = self._config
