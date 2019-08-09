@@ -1,0 +1,14 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: oraclelinux:7
+    steps:
+      # Setup
+      - checkout
+      - run: "yum install -y python36"
+      - run: "curl https://bootstrap.pypa.io/get-pip.py | python3"
+      - run: "pip3 install pylint"
+
+      # Pylint
+      - run: "pylint *.py"
