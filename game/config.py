@@ -1,10 +1,12 @@
+''' Contains code related to game configuration '''
+
 import yaml
 
 class ConfigError(Exception):
     pass
 
 class Config():
-    def __init__(self, loc='config.yml'):
+    def __init__(self, loc='/game/config.yml'):
         with open(loc, 'r') as fil:
             self._config = yaml.load(fil, Loader=yaml.SafeLoader)
 

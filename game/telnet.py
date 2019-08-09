@@ -1,3 +1,5 @@
+''' Contains game server code '''
+
 import logging
 import socket
 
@@ -5,7 +7,7 @@ from gevent import Greenlet
 from gevent import monkey
 monkey.patch_all()
 
-from game import GameSession
+from game.game import GameSession
 
 class TelnetServer():
 

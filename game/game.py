@@ -1,6 +1,8 @@
+''' Primary game module in game package, containing core game code '''
+
 import pymongo
 import yaml
-import config
+import game.config as config
 
 CONFIG = config.Config()
 

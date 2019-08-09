@@ -7,6 +7,7 @@ RUN yum install -y python36 && \
 ENV PYTHONUNBUFFERED=1
 EXPOSE 5555
 
-COPY config.py config.yml app.py telnet.py game.py /
+COPY game /game
+COPY app.py /
 
 CMD ["python3", "app.py"]
