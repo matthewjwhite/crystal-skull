@@ -11,4 +11,4 @@ jobs:
       - run: "pip3 install pylint"
 
       # Pylint
-      - run: "pylint *.py"
+      - run: "pylint */*.py"
