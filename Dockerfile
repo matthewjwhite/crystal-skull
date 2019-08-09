@@ -8,3 +8,5 @@ ENV PYTHONUNBUFFERED=1
 EXPOSE 5555
 
 COPY app.py telnet.py game.py /
+
+CMD ["python3", "app.py"]
