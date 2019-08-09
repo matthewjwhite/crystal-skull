@@ -43,13 +43,17 @@ class TelnetServerHandler(Greenlet):
         super().__init__(self.handle)
         self.start()
 
+    def get(self):
+        return self._handler.recv(1024).decode('utf-8').strip()
+
+    def send(self, data):
+        self._handler.sendall(data.encode('utf-8'))
+
     def handle(self):
         with self._handler: # Close connection after sending data.
-            # If no 'recv', thread will finish.
-            self._handler.sendall(b'Welcome!')
-            data = self._handler.recv(1024).decode('utf-8').strip()
+            self.send('Welcome!')
+            response = self.get()
             while True:
-                result = self._game.apply(data)
-                print(result)
-                self._handler.sendall(result.encode('utf-8'))
-                data = self._handler.recv(1024).decode('utf-8').strip()
+                result = self._game.apply(response)
+                self.send(result)
+                response = self.get()
