@@ -37,23 +37,12 @@ class TelnetServer():
             TelnetServerHandler(conn)
 
 class TelnetServerHandler(Greenlet):
-    def __init__(self, handler_socket):
-        self._handler = handler_socket
-        self._game = GameSession()
+    def __init__(self, socket):
+        self._socket = socket
+        self._game = GameSession(socket)
         super().__init__(self.handle)
         self.start()
 
-    def get(self):
-        return self._handler.recv(1024).decode('utf-8').strip()
-
-    def send(self, data):
-        self._handler.sendall(data.encode('utf-8'))
-
     def handle(self):
-        with self._handler: # Close connection after sending data.
-            self.send('Welcome!')
-            response = self.get()
-            while True:
-                result = self._game.apply(response)
-                self.send(result)
-                response = self.get()
+        with self._socket: # Kill conn. if exception, finishes, etc.
+            self._game.run()

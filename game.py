@@ -1,9 +1,22 @@
 class GameSession():
 
-    def __init__(self):
-        self.apply_amnt = 0
+    def __init__(self, socket):
+        self.socket = GameSocket(socket)
 
-    def apply(self, client_data):
-        self.apply_amnt += 1
+    def run(self):
+        response = self.socket.send_wait('Welcome! User?')
+        self.socket.send('Hello, {}!'.format(response))
 
-        return '{} {}'.format(client_data, str(self.apply_amnt))
+class GameSocket():
+    def __init__(self, socket):
+        self._socket = socket
+
+    def get(self):
+        return self._socket.recv(1024).decode('utf-8').strip()
+
+    def send(self, data):
+        self._socket.sendall(data.encode('utf-8'))
+
+    def send_wait(self, data):
+        self.send(data)
+        return self.get()
