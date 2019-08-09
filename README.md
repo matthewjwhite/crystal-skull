@@ -11,3 +11,14 @@
 1. Follow steps to create a user.
 
 The connection will die after the user is created.
+
+## Features
+
+### Implemented
+* Server
+* Basic user creation
+
+### To Be Implemented
+* Authentication
+* NPCs
+* Combat
