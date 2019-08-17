@@ -27,8 +27,8 @@ echo <encryptedEncodedChallenge> | base64 -d > challenge && \
 ### Implemented
 * Server
 * Basic user creation
+* Authentication
 
 ### To Be Implemented
-* Authentication
 * NPCs
 * Combat
