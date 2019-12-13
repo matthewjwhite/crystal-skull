@@ -4,10 +4,8 @@ import logging
 import socket
 
 from gevent import Greenlet
-from gevent import monkey
-from game.game import GameSession
 
-monkey.patch_all()
+from game.game import GameSession
 
 class TelnetServer():
     ''' Listener handling for Telnet server, creates session greenlets '''
