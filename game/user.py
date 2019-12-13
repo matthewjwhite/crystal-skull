@@ -1,8 +1,11 @@
+''' Code related to user accounts '''
+
 import base64
+import uuid
+
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_v1_5
 import pymongo
-import uuid
 
 import game.config as config
 
@@ -15,9 +18,16 @@ DB = pymongo.MongoClient('mongo', 27017).game.user
 # identifier for the user.
 DB.create_index([('name', pymongo.TEXT)], unique=True)
 
+class BadAuthentication(Exception):
+    ''' Bad authentication attempt '''
+
 class User:
+    ''' Represents a single user, and helpers for users '''
+
     @classmethod
     def get_user(cls, socket):
+        ''' Communicates with client to verify user '''
+
         name = socket.send_wait('Welcome! User?')
         if not DB.find({'name': name}).count():
             return cls.create_user(socket, name)
@@ -39,8 +49,14 @@ class User:
             user = DB.find_one({'name': name})
             return User(user['name'], user['class'], user['key'])
 
+        socket.send('Failed to complete challenge!')
+
+        raise BadAuthentication('User did not fulfill challenge')
+
     @staticmethod
     def create_user(socket, name):
+        ''' Communicates with client to create user '''
+
         msg = 'Does not exist! Create (Y/N)?'
         resp = socket.send_wait(msg)
         if resp.upper() != 'Y':
@@ -70,6 +86,8 @@ class User:
         self.key = key
 
     def save(self):
+        ''' Saves current state of user to DB '''
+
         data = {
             'name': self.name,
             'class': self.cls,
