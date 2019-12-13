@@ -18,8 +18,6 @@ DB.create_index([('name', pymongo.TEXT)], unique=True)
 class User:
     @classmethod
     def get_user(cls, socket):
-        print(cls)
-        print(socket)
         name = socket.send_wait('Welcome! User?')
         if not DB.find({'name': name}).count():
             return cls.create_user(socket, name)
