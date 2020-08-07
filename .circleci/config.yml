@@ -2,13 +2,11 @@ version: 2
 jobs:
   build:
     docker:
-      - image: oraclelinux:7
+      - image: alpine
     steps:
       # Setup
       - checkout
-      - run: "yum install -y python36"
-      - run: "curl https://bootstrap.pypa.io/get-pip.py | python3"
-      - run: "pip3 install pylint"
+      - run: "apk update && apk add --no-cache python3 py3-pip && pip3 install pylint"
 
       # Pylint
-      - run: "pylint */*.py"
+      - run: "pylint -d import-error,duplicate-code **/**.py"
