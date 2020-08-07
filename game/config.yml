@@ -3,3 +3,10 @@ player:
     - Mage
     - Barbarian
     - Paladin
+monster:
+  - name: Hellhound
+    strength: 2
+    health: 10
+  - name: Wizard
+    strength: 4
+    health: 20

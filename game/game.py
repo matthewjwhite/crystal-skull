@@ -1,5 +1,7 @@
 ''' Primary game module in game package, containing core game code '''
 
+import random
+
 from game.user import User
 
 class GameSession(): #pylint: disable=too-few-public-methods
@@ -13,7 +15,20 @@ class GameSession(): #pylint: disable=too-few-public-methods
         ''' Kicked off when the Greenlet is created '''
 
         self.user = User.get_user(self.socket)
-        self.socket.send('Welcome, {}!'.format(self.user.name))
+        self.socket.send_nl('Welcome, {}!'.format(self.user.name))
+
+        while self.socket.send_wait('Continue?').lower() != 'n':
+            if GameSession._battle():
+                self.user.battle(self.socket)
+
+            direction = self.socket.send_wait('Explore (N/E/S/W)?')
+            if direction.lower() not in ['n', 'e', 's', 'w']:
+                self.socket.send_nl('Very well, traveller!')
+
+    # Determines whether to enter a battle or not.
+    @staticmethod
+    def _battle():
+        return random.randrange(100) % 3 == 0
 
 class GameSocket():
     ''' Wrapper for the server socket, to communicate with client '''
@@ -31,6 +46,11 @@ class GameSocket():
         ''' Sends data to client '''
 
         self._socket.sendall(data.encode('utf-8'))
+
+    def send_nl(self, data):
+        ''' Wrapper for send, attaches newline '''
+
+        self.send('{}\r\n'.format(data))
 
     def send_wait(self, data):
         ''' Sends and waits for data '''
