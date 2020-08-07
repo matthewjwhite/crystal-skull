@@ -1,5 +1,7 @@
 # crystal-skull
 
+A highly-configurable, `telnet`-compatible, text-based RPG.
+
 ## Build
 
 1. `docker build -t crystal-skull .`
@@ -21,6 +23,16 @@ echo <encryptedEncodedChallenge> | base64 -d > challenge && \
     cat challenge-dec && \
     rm -f challenge-dec
 ```
+
+## Goals
+
+* Keep the client-server communication as primitive as possible, using `telnet`,
+  to maintain a retro feel.
+* Make most aspects of the game configurable via simple file edits.
+  * Rather than incorporating complex binaries burying aspects of maps, the goal
+    is to use a simple format, such as YAML, to define monsters, maps, etc.
+  * A server administrator could quickly customize the genre of the game, using
+    this as an engine of sorts for their own game.
 
 ## Features
 
