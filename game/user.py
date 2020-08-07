@@ -1,6 +1,7 @@
 ''' Code related to user accounts '''
 
 import base64
+import random
 import uuid
 
 from Crypto.PublicKey import RSA
@@ -8,6 +9,7 @@ from Crypto.Cipher import PKCS1_v1_5
 import pymongo
 
 import game.config as config
+from game.monster import Monster
 
 CONFIG = config.Config()
 DB = pymongo.MongoClient('mongo', 27017).game.user
@@ -47,7 +49,8 @@ class User:
         attempt = socket.send_wait('Decrypted {}?'.format(enc))
         if challenge == attempt:
             user = DB.find_one({'name': name})
-            return User(user['name'], user['class'], user['key'])
+            return User(user['name'], user['class'], user['key'],
+                        user['hp'], user['str'])
 
         socket.send('Failed to complete challenge!')
 
@@ -80,10 +83,23 @@ class User:
 
         return user
 
-    def __init__(self, name, cls, key):
+    # pylint: disable=too-many-arguments
+    def __init__(self, name, cls, key, health=100, strength=10):
         self.cls = cls
         self.name = name
         self.key = key
+        self.health = health
+        self.strength = strength
+
+    def lose(self, amount):
+        ''' Subtracts an amount from health '''
+
+        self.health = self.health - amount
+
+    def hit(self):
+        ''' Determines amount to hit '''
+
+        return random.randrange(self.strength/2, self.strength)
 
     def save(self):
         ''' Saves current state of user to DB '''
@@ -91,7 +107,43 @@ class User:
         data = {
             'name': self.name,
             'class': self.cls,
-            'key': self.key
+            'key': self.key,
+            'health': self.health,
+            'strength': self.strength
         }
 
         DB.update({'name': self.name}, {'$set': data}, upsert=True)
+
+    def battle(self, socket):
+        ''' Carries out a battle against a monster
+
+        Returns remaining user HP
+        '''
+
+        monster_config = random.choice(CONFIG.get('monster'))
+        monster = Monster(monster_config['name'], monster_config['health'],
+                          monster_config['strength'])
+
+        while True:
+            monster_dmg = monster.hit()
+            self.lose(monster_dmg)
+            self.save()
+            socket.send_nl('{} inflicted {}, you have {} remaining'
+                           .format(monster.name, monster_dmg, self.health))
+            if self.health <= 0:
+                break
+
+            if socket.send_wait('Flee?').lower() == 'y':
+                break
+
+            dmg = self.hit()
+            monster.lose(dmg)
+            socket.send_nl('You inflicted {}, {} has {} remaining'
+                           .format(dmg, monster.name, monster.health))
+            if monster.health <= 0:
+                break
+
+            if socket.send_wait('Flee?').lower() == 'y':
+                break
+
+        return self.health
