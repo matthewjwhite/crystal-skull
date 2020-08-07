@@ -1,8 +1,9 @@
-FROM oraclelinux:7
+FROM alpine
 
-RUN yum install -y python36 && \
-    curl https://bootstrap.pypa.io/get-pip.py | python3 && \
-    pip3 install gevent pycryptodome pymongo pyyaml
+RUN apk update && \
+    apk add --no-cache python3 python3-dev make \
+                       musl-dev libffi-dev py3-pip gcc
+RUN pip3 install gevent pycryptodome pymongo pyyaml
 
 ENV PYTHONUNBUFFERED=1
 EXPOSE 5555
