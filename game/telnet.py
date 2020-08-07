@@ -41,7 +41,7 @@ class TelnetServer():
             conn, _ = self._listener.accept()
             TelnetServerHandler(conn)
 
-class TelnetServerHandler(Greenlet):
+class TelnetServerHandler(Greenlet): #pylint: disable=too-few-public-methods
     ''' Wrapper class for game session Greenlet '''
 
     def __init__(self, sock):
