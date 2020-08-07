@@ -33,14 +33,3 @@ echo <encryptedEncodedChallenge> | base64 -d > challenge && \
     is to use a simple format, such as YAML, to define monsters, maps, etc.
   * A server administrator could quickly customize the genre of the game, using
     this as an engine of sorts for their own game.
-
-## Features
-
-### Implemented
-* Server
-* Basic user creation
-* Authentication
-
-### To Be Implemented
-* NPCs
-* Combat
