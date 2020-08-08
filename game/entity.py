@@ -6,8 +6,9 @@ class Entity:
     ''' Defines an entity '''
 
     #pylint: disable=unused-argument
-    def __init__(self, name, health=100, strength=10, **kwargs):
-        # **kwargs required as DB stores extra fields.
+    def __init__(self, name, health=100, strength=10):
+        ''' Param names match constants.py '''
+
         self.name = name
         self.health = health
         self.strength = strength
