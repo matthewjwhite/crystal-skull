@@ -10,6 +10,7 @@ import pymongo
 
 import game.config as config
 from game.monster import Monster
+from game.entity import Entity
 
 CONFIG = config.Config()
 DB = pymongo.MongoClient('mongo', 27017).game.user
@@ -23,7 +24,7 @@ DB.create_index([('name', pymongo.TEXT)], unique=True)
 class BadAuthentication(Exception):
     ''' Bad authentication attempt '''
 
-class User:
+class User(Entity):
     ''' Represents a single user, and helpers for users '''
 
     @classmethod
@@ -48,9 +49,8 @@ class User:
         # Get attempt, and compare.
         attempt = socket.send_wait('Decrypted {}?'.format(enc))
         if challenge == attempt:
-            user = DB.find_one({'name': name})
-            return User(user['name'], user['class'], user['key'],
-                        user['hp'], user['str'])
+            data = DB.find_one({'name': name})
+            return User(**data)
 
         socket.send('Failed to complete challenge!')
 
@@ -78,35 +78,22 @@ class User:
             socket.send('Invalid class!')
             raise RuntimeError('Invalid class selected')
 
-        user = User(name, cls, key)
+        user = User(name=name, cls=cls, key=key)
         user.save()
 
         return user
 
-    # pylint: disable=too-many-arguments
-    def __init__(self, name, cls, key, health=100, strength=10):
+    def __init__(self, cls, key, **kwargs):
         self.cls = cls
-        self.name = name
         self.key = key
-        self.health = health
-        self.strength = strength
-
-    def lose(self, amount):
-        ''' Subtracts an amount from health '''
-
-        self.health = self.health - amount
-
-    def hit(self):
-        ''' Determines amount to hit '''
-
-        return random.randrange(self.strength/2, self.strength)
+        super().__init__(**kwargs)
 
     def save(self):
         ''' Saves current state of user to DB '''
 
         data = {
             'name': self.name,
-            'class': self.cls,
+            'cls': self.cls,
             'key': self.key,
             'health': self.health,
             'strength': self.strength
@@ -120,9 +107,8 @@ class User:
         Returns remaining user HP
         '''
 
-        monster_config = random.choice(CONFIG.get('monster'))
-        monster = Monster(monster_config['name'], monster_config['health'],
-                          monster_config['strength'])
+        data = random.choice(CONFIG.get('monster'))
+        monster = Monster(**data)
 
         while True:
             monster_dmg = monster.hit()
