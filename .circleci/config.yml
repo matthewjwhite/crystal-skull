@@ -9,4 +9,4 @@ jobs:
       - run: "apk update && apk add --no-cache python3 py3-pip && pip3 install pylint"
 
       # Pylint
-      - run: "pylint -d import-error,duplicate-code **/**.py"
+      - run: "pylint -d import-error **/**.py"
