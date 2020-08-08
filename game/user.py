@@ -49,6 +49,7 @@ class User(Entity):
         # Get attempt, and compare.
         attempt = socket.send_wait('Decrypted {}?'.format(enc))
         if challenge == attempt:
+            # DB field names match User constructor parameters.
             data = DB.find_one({'name': name})
             return User(**data)
 
@@ -107,6 +108,7 @@ class User(Entity):
         Returns remaining user HP
         '''
 
+        # Monster constructor parameters match configuration.
         data = random.choice(CONFIG.get('monster'))
         monster = Monster(**data)
 
