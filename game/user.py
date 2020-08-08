@@ -11,6 +11,9 @@ import pymongo
 import game.config as config
 from game.monster import Monster
 from game.entity import Entity
+from game.constants import \
+    DB_NAME, DB_STR, DB_KEY, DB_CLS, DB_HP, \
+    NAME, STR, KEY, CLS, HP
 
 CONFIG = config.Config()
 DB = pymongo.MongoClient('mongo', 27017).game.user
@@ -27,16 +30,29 @@ class BadAuthentication(Exception):
 class User(Entity):
     ''' Represents a single user, and helpers for users '''
 
+    @staticmethod
+    def db_to_user(**kwargs):
+        ''' Converts database document to User object '''
+
+        data = {
+            NAME: kwargs[DB_NAME],
+            CLS: kwargs[DB_CLS],
+            KEY: kwargs[DB_KEY],
+            HP: kwargs[DB_HP],
+            STR: kwargs[DB_STR]
+        }
+        return User(**data)
+
     @classmethod
     def get_user(cls, socket):
         ''' Communicates with client to verify user '''
 
         name = socket.send_wait('Welcome! User?')
-        if not DB.find({'name': name}).count():
+        if not DB.find({DB_NAME: name}).count():
             return cls.create_user(socket, name)
 
         # Instantiate RSA public key object.
-        key = DB.find_one({'name': name})['key'].encode('utf-8')
+        key = DB.find_one({DB_NAME: name})[DB_KEY].encode('utf-8')
         key = RSA.importKey(key)
 
         # Encrypt random challenge for user to decrypt w/ priv. key.
@@ -50,8 +66,7 @@ class User(Entity):
         attempt = socket.send_wait('Decrypted {}?'.format(enc))
         if challenge == attempt:
             # DB field names match User constructor parameters.
-            data = DB.find_one({'name': name})
-            return User(**data)
+            return User.db_to_user(**DB.find_one({DB_NAME: name}))
 
         socket.send('Failed to complete challenge!')
 
@@ -85,22 +100,28 @@ class User(Entity):
         return user
 
     def __init__(self, cls, key, **kwargs):
+        ''' Param names match constants.py '''
+
         self.cls = cls
         self.key = key
         super().__init__(**kwargs)
 
+    def to_db(self):
+        ''' Translates object to DB document '''
+
+        return {
+            DB_NAME: self.name,
+            DB_CLS: self.cls,
+            DB_KEY: self.key,
+            DB_HP: self.health,
+            DB_STR: self.strength
+        }
+
     def save(self):
         ''' Saves current state of user to DB '''
 
-        data = {
-            'name': self.name,
-            'cls': self.cls,
-            'key': self.key,
-            'health': self.health,
-            'strength': self.strength
-        }
-
-        DB.update({'name': self.name}, {'$set': data}, upsert=True)
+        DB.update({DB_NAME: self.name}, {'$set': self.to_db()},
+                  upsert=True)
 
     def battle(self, socket):
         ''' Carries out a battle against a monster
@@ -110,7 +131,7 @@ class User(Entity):
 
         # Monster constructor parameters match configuration.
         data = random.choice(CONFIG.get('monster'))
-        monster = Monster(**data)
+        monster = Monster.cfg_to_monster(**data)
 
         while True:
             monster_dmg = monster.hit()
