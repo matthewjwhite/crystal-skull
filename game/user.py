@@ -8,14 +8,14 @@ from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_v1_5
 import pymongo
 
-import game.config as config
+from game.config import Config
 from game.monster import Monster
 from game.entity import Entity
 from game.constants import \
     DB_NAME, DB_STR, DB_KEY, DB_CLS, DB_HP, \
     NAME, STR, KEY, CLS, HP
 
-CONFIG = config.Config()
+CONFIG = Config.load()
 DB = pymongo.MongoClient('mongo', 27017).game.user
 
 # Avoid accidental multiple occurrences, ie. if multiple creation
