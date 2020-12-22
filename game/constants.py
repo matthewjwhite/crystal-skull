@@ -19,3 +19,6 @@ HP = 'health'
 
 DB_STR = 'strength'
 STR = 'strength'
+
+DB_LOC = 'location'
+LOC = 'location'
