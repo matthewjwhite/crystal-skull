@@ -31,7 +31,7 @@ class User(Entity):
     ''' Represents a single user, and helpers for users '''
 
     @staticmethod
-    def db_to_user(**kwargs):
+    def from_db(**kwargs):
         ''' Converts database document to User object '''
 
         data = {
@@ -66,7 +66,7 @@ class User(Entity):
         attempt = socket.send_wait('Decrypted {}?'.format(enc))
         if challenge == attempt:
             # DB field names match User constructor parameters.
-            return User.db_to_user(**DB.find_one({DB_NAME: name}))
+            return User.from_db(**DB.find_one({DB_NAME: name}))
 
         socket.send('Failed to complete challenge!')
 
@@ -131,7 +131,7 @@ class User(Entity):
 
         # Monster constructor parameters match configuration.
         data = random.choice(CONFIG.get('monster'))
-        monster = Monster.cfg_to_monster(**data)
+        monster = Monster.from_cfg(**data)
 
         while True:
             monster_dmg = monster.hit()

@@ -8,7 +8,7 @@ class Monster(Entity):
     ''' Monster '''
 
     @staticmethod
-    def cfg_to_monster(**kwargs):
+    def from_cfg(**kwargs):
         ''' Converts configuration monster to Monster object '''
 
         data = {
