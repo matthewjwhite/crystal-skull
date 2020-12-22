@@ -21,6 +21,6 @@ class Config(): # pylint: disable=too-few-public-methods
             for part in parts:
                 data = data[part]
         except (KeyError, TypeError):
-            raise ConfigError('Failed to get path: {}'.format(path))
+            raise ConfigError('Failed to get path: {}'.format(path)) from None
 
         return data
