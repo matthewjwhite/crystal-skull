@@ -9,6 +9,7 @@ ENV PYTHONUNBUFFERED=1
 EXPOSE 5555
 
 COPY game /game
+COPY config.yml /game
 COPY app.py /
 
 CMD ["python3", "app.py"]
