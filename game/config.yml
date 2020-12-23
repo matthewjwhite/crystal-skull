@@ -10,3 +10,44 @@ monster:
   - name: Wizard
     strength: 4
     health: 20
+map:
+  - name: West Dungeon
+    monsters:
+      - Hellhound
+    dim:
+      xMin: 0
+      yMin: 0
+      xMax: 200
+      yMax: 200
+  - name: Central Dungeon
+    monsters:
+      - Wizard
+    dim:
+      xMin: 201
+      yMin: 100
+      xMax: 400
+      yMax: 300
+  - name: East Dungeon
+    monsters:
+      - Wizard
+    dim:
+      xMin: 401
+      yMin: 0
+      xMax: 600
+      yMax: 300
+  - name: North Dungeon
+    monsters:
+      - Wizard
+    dim:
+      xMin: 300
+      yMin: 301
+      xMax: 450
+      yMax: 500
+  - name: South Dungeon
+    monsters:
+      - Wizard
+    dim:
+      xMin: 250
+      yMin: 50
+      xMax: 380
+      yMax: 99
