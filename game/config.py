@@ -1,6 +1,6 @@
 ''' Contains code related to game configuration '''
 
-import yaml
+import yamale
 
 class ConfigError(Exception):
     ''' Exception for configuration errors '''
@@ -11,17 +11,27 @@ class Config(): # pylint: disable=too-few-public-methods
     _single = None # Singleton instance.
 
     @classmethod
-    def load(cls, loc='/game/config.yml'):
+    def load(cls, loc='/game/config.yml', schema_loc='/game/schema.yml'):
         ''' Creates and returns singleton instance '''
 
         if Config._single is None:
-            cls._single = Config(loc)
+            cls._single = Config(loc, schema_loc)
 
         return cls._single
 
-    def __init__(self, loc):
-        with open(loc, 'r') as fil:
-            self._config = yaml.load(fil, Loader=yaml.SafeLoader)
+    def __init__(self, loc, schema_loc):
+        try:
+            config = yamale.make_data(loc)
+            schema = yamale.make_schema(schema_loc)
+        except OSError as error:
+            raise ConfigError('Unable to read file') from error
+
+        try:
+            yamale.validate(schema, config)
+        except ValueError as error:
+            raise ConfigError('Configuration deviates from schema') from error
+
+        self._config = config[0][0]
 
     def get(self, path):
         ''' Used to query for config element '''

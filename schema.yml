@@ -1,0 +1,22 @@
+monster: list(include('monster_type'), min=1)
+map: list(include('map_type'), min=1)
+player: include('player_type')
+---
+monster_type:
+    name: str(min=1)
+    strength: int(min=1)
+    health: int(min=1)
+
+map_type:
+    name: str(min=1)
+    monsters: list(str(min=1), min=1)
+    dim: include('dim_type')
+
+dim_type:
+    xMin: int(min=0)
+    yMin: int(min=0)
+    xMax: int(min=0)
+    yMax: int(min=0)
+
+player_type:
+    class: list(str(min=1), min=1)
