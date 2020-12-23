@@ -1,6 +1,7 @@
 ''' Code related to user accounts '''
 
 import base64
+import copy
 import random
 import uuid
 
@@ -9,7 +10,6 @@ from Crypto.Cipher import PKCS1_v1_5
 import pymongo
 
 from game.config import Config
-from game.monster import Monster
 from game.entity import Entity
 from game.map import Location, Map
 from game.constants import \
@@ -142,9 +142,7 @@ class User(Entity):
         Returns remaining user HP
         '''
 
-        # Monster constructor parameters match configuration.
-        data = random.choice(CONFIG.get('monster'))
-        monster = Monster.from_cfg(**data)
+        monster = copy.deepcopy(random.choice(self.location.map.monsters))
 
         while True:
             monster_dmg = monster.hit()
