@@ -24,11 +24,15 @@ class GameSession(): #pylint: disable=too-few-public-methods
             direction = self.socket.send_wait('Explore (N/E/S/W)?')
             if direction.lower() not in ['n', 'e', 's', 'w']:
                 self.socket.send_nl('Very well, traveller!')
+            else:
+                try:
+                    self.user.move(direction)
+                    self.user.save()
+                except BadMove:
+                    self.socket.send_nl('At boundary, choose another direction!')
 
-            try:
-                self.user.move(direction)
-            except BadMove:
-                self.socket.send_nl('At boundary, choose another direction!')
+            self.socket.send_nl('Location: {}, ({}, {})'.format(
+                self.user.location.map.name, self.user.location.x, self.user.location.y))
 
     # Determines whether to enter a battle or not.
     @staticmethod
