@@ -11,8 +11,7 @@ A highly-configurable, `telnet`-compatible, text-based RPG.
 1. `docker-compose up -d`
 1. `telnet localhost 5555`
 1. Follow steps to create a user.
-
-The connection will die after the user is created.
+1. Play the game!
 
 Upon reconnecting, you will need to decrypt the challenge to authenticate.
 
