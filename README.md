@@ -21,7 +21,7 @@ To decrypt (assuming priv. key at `mykey.pem`):
 echo <encryptedEncodedChallenge> | base64 -d > challenge && \
     openssl rsautl -decrypt -in challenge -inkey mykey.pem -out challenge-dec && \
     cat challenge-dec && \
-    rm -f challenge-dec
+    rm -f challenge challenge-dec
 ```
 
 ## Goals
